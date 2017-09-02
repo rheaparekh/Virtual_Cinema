@@ -280,8 +280,6 @@ function receiveDataFirefoxFactory() {
     }
   };
 }
-
-
 /****************************************************************************
 * Aux functions, mostly UI-related
 ****************************************************************************/
@@ -313,25 +311,24 @@ function sendPhoto() {
 
 function faceVerification(){
        var params = {
-          data: "{'returnFaceAttributes':'True'}",
+         "returnFaceId": "true",
        };
-       var image1="https://www.gossipcop.com/wp-content/uploads/2016/04/Louis-CK-Howard-Stern-Show-2016-306x400.jpg";
-       var image2="http://www.emmys.com/sites/default/files/styles/bio_pics_detail/public/louis-ck-2016-450x600.jpg?itok=3NI1CEUn";
-       var p1,p2;
+       var image1='http://localhost:3000/static/images/random.png';
+       var image2="http://localhost:3000/static/images/verification.png";
+       var img1,img2;
        var key1="a0b691601a8c40d38f8376dbf9ebdff5";
        var key2="83e3cc521fcc454aaef545321d726503";
        $.ajax({
           url:"https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?" + $.param(params),  
           beforeSend: function (xhrObj) {
-              console.log("fd");
               xhrObj.setRequestHeader("Content-Type", "application/json");
-              xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", key2);
+              xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", key1);
           },
           type: "POST",
-          data:image1,
+          data:'{  "url" :"https://comedycentral.mtvnimages.com/images/ccstandup/comedians/800x600/louis_ck_800x600.jpg?width=800&height=600&crop=true&quality=0.91" }',
       }).done(function(data){
-           p1=data;
-           console.log('faceId from saved object 1 = ' + p1[0].faceId);
+          img1=data;
+          console.log('faceId from saved object 1 = ' + img1[0].faceId);
 
            $.ajax({
                url:"https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?" + $.param(params),
@@ -340,10 +337,11 @@ function faceVerification(){
                  xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", key2);
                },
                type:"POST",
-               data:image2,
+               data:'{ "url" : "https://i.ytimg.com/vi/8yEgJ-xeoXQ/maxresdefault.jpg"}',
+             //  data:'{ "url" : "http://localhost:3000/static/images/random.png"}',
            }).done(function(data){
-             p2=data;
-             console.log('faceId from saved object 2 = ' + p2[0].faceId);
+             img2=data;
+             console.log('faceId from saved object 2 = ' + img2[0].faceId);
 
              var params = {
              };
@@ -354,13 +352,13 @@ function faceVerification(){
                     xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", key2);
                 },
                 type: "POST",
-                data: "{'faceId1':'" + p2[0].faceId + "','faceId2':'" + p1[0].faceId + "'}"
+                data: "{'faceId1':'" + img2[0].faceId + "','faceId2':'" + img1[0].faceId + "'}"
              }).done(function(data){
                console.log(data);
                if(data.isIdentical==false){
                   console.log("dscsdcs");
                }else{
-                  console.log("GFbf");
+                  console.log("ISIDENTICAL");
                }
          }).fail(function(){
             console.log("error");
@@ -369,46 +367,6 @@ function faceVerification(){
   });
 
 }
-
-
-/*function downloadURI(uri, name) {
-  var link = document.createElement("a");
-  link.download = name;
-  link.href = uri;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  delete link;
-}*/
-//downloadURI(imgData, "imgData.png");
-
-
-
-//img=img.replace('data:image/png;base64,', '');
-//console.log(img);
-// Split data channel message in chunks of this byte length.
-/*var CHUNK_LEN = 64000;
-console.log('width and height ', photoContextW, photoContextH);
-var img = photoContext.getImageData(0, 0, photoContextW, photoContextH),
-len = img.data.byteLength,
-n = len / CHUNK_LEN | 0;
-//console.log(img);
-console.log('Sending a total of ' + len + ' byte(s)');
-//dataChannel.send(len);
-
-// split the photo and send in chunks of about 64KB
-for (var i = 0; i < n; i++) {
-  var start = i * CHUNK_LEN,
-  end = (i + 1) * CHUNK_LEN;
-  console.log(start + ' - ' + (end - 1));
-  dataChannel.send(img.data.subarray(start, end));
-}
-
-// send the reminder, if any
-if (len % CHUNK_LEN) {
-  console.log('last ' + len % CHUNK_LEN + ' byte(s)');
-  dataChannel.send(img.data.subarray(n * CHUNK_LEN));
-}*/
 }
 
 function snapAndSend() {
