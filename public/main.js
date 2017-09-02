@@ -1,5 +1,3 @@
-//'use strict';
-
 /****************************************************************************
 * Initial setup
 ****************************************************************************/
@@ -24,18 +22,15 @@ var snapAndSendBtn = document.getElementById('snapAndSend');
 var photoContextW;
 var photoContextH;
 
-// Attach event handlers
 snapBtn.addEventListener('click', snapPhoto);
 sendBtn.addEventListener('click', sendPhoto);
 snapAndSendBtn.addEventListener('click', snapAndSend);
 
-// Create a random room if not already present in the URL.
 var isInitiator;
 var room = window.location.hash.substring(1);
 if (!room) {
   room = window.location.hash = randomToken();
 }
-
 
 /****************************************************************************
 * Signaling server
@@ -83,7 +78,6 @@ socket.on('message', function(message) {
   signalingMessageCallback(message);
 });
 
-// Join a room
 socket.emit('create or join', room);
 
 if (location.hostname.match(/localhost|127\.0\.0/)) {
@@ -298,13 +292,11 @@ function snapPhoto() {
 }
 
 function sendPhoto() {
-var img=new Image();
-var imgData = document.getElementById('photo').toDataURL("image/png");
+  var img=new Image();
+  var imgData = document.getElementById('photo').toDataURL("image/png");
 
-console.log(imgData);
-//console.log(imgData.replace(/^data:image\/(png|jpg);base64,/, ""));
-var imgData2=document.getElementById('photo').toBlob(function(blob) {
-        var formData = new FormData();
+  var imgData2=document.getElementById('photo').toBlob(function(blob) {
+  var formData = new FormData();
         formData.append('fname', 'snap.png');
         formData.append('data', blob);
         $.ajax({
@@ -316,29 +308,70 @@ var imgData2=document.getElementById('photo').toBlob(function(blob) {
         }).done(function(data) {
           console.log(data);
         });
-
-        
-        var newImg = document.createElement('img1');
-        url = URL.createObjectURL(blob);
-        newImg.onload = function() {
-              // no longer need to read the blob so it's revoked
-               URL.revokeObjectURL(url);
-         };
-         console.log(url);
-         newImg.src = url//;
-         document.body.appendChild(newImg);
+  faceVerification();
 });
 
-$.post('/ajax/uploadthumbnail.php',
- {
-      img : imgData
-}, function(data) {
-      console.log(data);
-});
+function faceVerification(){
+       var params = {
+          data: "{'returnFaceAttributes':'True'}",
+       };
+       var image1="https://www.gossipcop.com/wp-content/uploads/2016/04/Louis-CK-Howard-Stern-Show-2016-306x400.jpg";
+       var image2="http://www.emmys.com/sites/default/files/styles/bio_pics_detail/public/louis-ck-2016-450x600.jpg?itok=3NI1CEUn";
+       var p1,p2;
+       var key1="a0b691601a8c40d38f8376dbf9ebdff5";
+       var key2="83e3cc521fcc454aaef545321d726503";
+       $.ajax({
+          url:"https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?" + $.param(params),  
+          beforeSend: function (xhrObj) {
+              console.log("fd");
+              xhrObj.setRequestHeader("Content-Type", "application/json");
+              xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", key2);
+          },
+          type: "POST",
+          data:image1,
+      }).done(function(data){
+           p1=data;
+           console.log('faceId from saved object 1 = ' + p1[0].faceId);
 
-//console.log(imgData2);
-img.src=imgData;
-function downloadURI(uri, name) {
+           $.ajax({
+               url:"https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?" + $.param(params),
+               beforeSend: function (xhrObj) {
+                 xhrObj.setRequestHeader("Content-Type", "application/json");
+                 xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", key2);
+               },
+               type:"POST",
+               data:image2,
+           }).done(function(data){
+             p2=data;
+             console.log('faceId from saved object 2 = ' + p2[0].faceId);
+
+             var params = {
+             };
+             $.ajax({
+                url: "https://westcentralus.api.cognitive.microsoft.com/face/v1.0/verify?" + $.param(params),
+                beforeSend: function (xhrObj) {
+                    xhrObj.setRequestHeader("Content-Type", "application/json");
+                    xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", key2);
+                },
+                type: "POST",
+                data: "{'faceId1':'" + p2[0].faceId + "','faceId2':'" + p1[0].faceId + "'}"
+             }).done(function(data){
+               console.log(data);
+               if(data.isIdentical==false){
+                  console.log("dscsdcs");
+               }else{
+                  console.log("GFbf");
+               }
+         }).fail(function(){
+            console.log("error");
+        });
+     });
+  });
+
+}
+
+
+/*function downloadURI(uri, name) {
   var link = document.createElement("a");
   link.download = name;
   link.href = uri;
@@ -346,7 +379,7 @@ function downloadURI(uri, name) {
   link.click();
   document.body.removeChild(link);
   delete link;
-}
+}*/
 //downloadURI(imgData, "imgData.png");
 
 
@@ -354,12 +387,12 @@ function downloadURI(uri, name) {
 //img=img.replace('data:image/png;base64,', '');
 //console.log(img);
 // Split data channel message in chunks of this byte length.
-var CHUNK_LEN = 64000;
+/*var CHUNK_LEN = 64000;
 console.log('width and height ', photoContextW, photoContextH);
 var img = photoContext.getImageData(0, 0, photoContextW, photoContextH),
 len = img.data.byteLength,
 n = len / CHUNK_LEN | 0;
-console.log(img);
+//console.log(img);
 console.log('Sending a total of ' + len + ' byte(s)');
 //dataChannel.send(len);
 
@@ -375,7 +408,7 @@ for (var i = 0; i < n; i++) {
 if (len % CHUNK_LEN) {
   console.log('last ' + len % CHUNK_LEN + ' byte(s)');
   dataChannel.send(img.data.subarray(n * CHUNK_LEN));
-}
+}*/
 }
 
 function snapAndSend() {
@@ -400,7 +433,6 @@ function show() {
   Array.prototype.forEach.call(arguments, function(elem) {
     elem.style.display = null;
   });
-  console.log("show");
 }
 
 function hide() {
