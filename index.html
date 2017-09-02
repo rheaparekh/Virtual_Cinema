@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>Snap Save</title>
+
+  <link rel="stylesheet" href="static/main.css" />
+
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<body>
+
+  <h1>Snap save</h1>
+
+  <div id="videoCanvas">
+    <video id="camera" autoplay hidden></video>
+    <canvas id="photo"></canvas>
+  </div>
+  <div id="buttons">
+    <button id="snap">Snap</button><span> then </span><button id="send">Send</button>
+    <span> or </span>
+    <button id="snapAndSend">Snap &amp; Send</button>
+  </div>
+
+  <!--<script src="/socket.io/socket.io.js"></script>--!>
+<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>--!>
+  <script src="static/lib/adapter.js"></script>
+  <script src="static/main.js"></script>
+
+</body>
+
+</html>
