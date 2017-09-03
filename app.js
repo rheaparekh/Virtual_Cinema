@@ -3,19 +3,46 @@ const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
+var counter=4;
+var cloudinary = require('cloudinary');
 const multer = require('multer');
-const upload = multer({ dest: 'public/images/' });
+const upload = multer.diskStorage({ destination: 'public/images/', filename: function ( req, file, cb ) {
+                        cb( null, 'hello.png' );
+                        }});
+const saving = multer({storage:upload});
 
-
+cloudinary.config({ 
+  cloud_name: 'drtk420dr', 
+    api_key: '294423986439988', 
+      api_secret: 'R5zVmEA_oicBPr72wADypvBQkPY' 
+      });
 app.use('/static', express.static(__dirname +  '/public'));
 
 app.get('/', function (req, res) {
   res.sendFile('index.html', {"root": __dirname});
 });
+/*app.post('/receiveSnap', function (req, res) {
+var storage = multer.diskStorage({
+  destination: 'public/images',
+    filename: function (req, file, cb) {
+        crypto.pseudoRandomBytes(16, function (err, raw) {
+              if (err) return cb(err)
 
-app.post('/receiveSnap', upload.single('data'), function (req, res) {
+                    cb(null, raw.toString('hex') + path.extname(file.originalname))
+                        });
+                          }
+*/                         
+
+app.post('/receiveSnap', saving.single('data'), function (req, res) {
+counter = Math.floor(Math.random()*100000);
+console.log(counter+"app");
+io.emit('counter',counter);
+counter=counter;
   res.json({hello:req.file.mimetype});
-});
+    console.log("Shaddy ne machaya");
+    cloudinary.v2.uploader.upload('public/images/hello.png', {public_id: "sample_id"+counter}, 
+        function(error, result){console.log(result)});
+        });
 
 /*
 app.listen(3000, function () {
@@ -76,4 +103,4 @@ io.on('connection', function(socket) {
 
 });
 
-server.listen(process.env.PORT || 8080);
+server.listen(process.env.PORT || 3000);

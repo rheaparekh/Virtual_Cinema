@@ -21,7 +21,7 @@ var snapAndSendBtn = document.getElementById('snapAndSend');
 
 var photoContextW;
 var photoContextH;
-
+var counter;
 snapBtn.addEventListener('click', snapPhoto);
 sendBtn.addEventListener('click', sendPhoto);
 snapAndSendBtn.addEventListener('click', snapAndSend);
@@ -35,11 +35,9 @@ if (!room) {
 /****************************************************************************
 * Signaling server
 ****************************************************************************/
-
+var socket=io.connect();
 // Connect to the signaling server
-//var socket = io('http://localhost').connect();
-var socket = io.connect();
-
+//var socket = io('http://localhost').connect()
 socket.on('ipaddr', function(ipaddr) {
   console.log('Server IP address is: ' + ipaddr);
   // updateRoomURL(ipaddr);
@@ -308,7 +306,14 @@ function sendPhoto() {
         });
   faceVerification();
 });
-
+var socket = io.connect();
+var images;
+socket.on('counter',function(a){
+    counter=a;
+    console.log(counter+"counter");
+    images="http://res.cloudinary.com/drtk420dr/image/upload/v1504405235/sample_id"+counter+".png";
+    console.log(images);
+});
 function faceVerification(){
        var params = {
          "returnFaceId": "true",
@@ -318,6 +323,7 @@ function faceVerification(){
        var img1,img2;
        var key1="a0b691601a8c40d38f8376dbf9ebdff5";
        var key2="83e3cc521fcc454aaef545321d726503";
+       console.log(images);
        $.ajax({
           url:"https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?" + $.param(params),  
           beforeSend: function (xhrObj) {
@@ -325,7 +331,9 @@ function faceVerification(){
               xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", key1);
           },
           type: "POST",
-          data:'{  "url" :"https://comedycentral.mtvnimages.com/images/ccstandup/comedians/800x600/louis_ck_800x600.jpg?width=800&height=600&crop=true&quality=0.91" }',
+         // data: '{ "url" :"https://orig00.deviantart.net/5c0f/f/2013/324/5/8/shahrukh_khan_png_by_shutupdemi-d6v0umi.png"}',
+            data:'{  "url" : '+images+ '}',
+         // data:'{"url":"https://i.pinimg.com/736x/80/a9/18/80a9182b3e78acd6ce5fb76f59c43a90--hello-kitty-backgrounds-hello-kitty-pictures.jpg")',
       }).done(function(data){
           img1=data;
           console.log('faceId from saved object 1 = ' + img1[0].faceId);
@@ -337,7 +345,9 @@ function faceVerification(){
                  xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", key2);
                },
                type:"POST",
-               data:'{ "url" : "https://i.ytimg.com/vi/8yEgJ-xeoXQ/maxresdefault.jpg"}',
+               //data:'{"url" : "https://pbs.twimg.com/media/CRW3KznUEAAbedB.png" }', 
+               data:'{ "url" : "http://res.cloudinary.com/drtk420dr/image/upload/v1504405235/sample_id1.png"}',
+              //data: '{"url":"http://www.freepngimg.com/download/lion/3-2-lion-png.png"}',
              //  data:'{ "url" : "http://localhost:3000/static/images/random.png"}',
            }).done(function(data){
              img2=data;
@@ -365,7 +375,6 @@ function faceVerification(){
         });
      });
   });
-
 }
 }
 
