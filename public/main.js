@@ -318,9 +318,11 @@ function faceVerification(){
        var params = {
          "returnFaceId": "true",
        };
-       var image1='http://localhost:3000/static/images/random.png';
-       var image2="http://localhost:3000/static/images/verification.png";
+       
        var img1,img2;
+       
+       //Microsoft key :
+
        var key1="a0b691601a8c40d38f8376dbf9ebdff5";
        var key2="83e3cc521fcc454aaef545321d726503";
        console.log(images);
@@ -331,9 +333,7 @@ function faceVerification(){
               xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", key1);
           },
           type: "POST",
-         // data: '{ "url" :"https://orig00.deviantart.net/5c0f/f/2013/324/5/8/shahrukh_khan_png_by_shutupdemi-d6v0umi.png"}',
             data:'{  "url" : '+images+ '}',
-         // data:'{"url":"https://i.pinimg.com/736x/80/a9/18/80a9182b3e78acd6ce5fb76f59c43a90--hello-kitty-backgrounds-hello-kitty-pictures.jpg")',
       }).done(function(data){
           img1=data;
           console.log('faceId from saved object 1 = ' + img1[0].faceId);
@@ -345,10 +345,8 @@ function faceVerification(){
                  xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", key2);
                },
                type:"POST",
-               //data:'{"url" : "https://pbs.twimg.com/media/CRW3KznUEAAbedB.png" }', 
+               //ADD PATH TO SAVED IMAGE WHICH IS TO BE VERIFIED
                data:'{ "url" : "http://res.cloudinary.com/drtk420dr/image/upload/v1504405235/sample_id1.png"}',
-              //data: '{"url":"http://www.freepngimg.com/download/lion/3-2-lion-png.png"}',
-             //  data:'{ "url" : "http://localhost:3000/static/images/random.png"}',
            }).done(function(data){
              img2=data;
              console.log('faceId from saved object 2 = ' + img2[0].faceId);
@@ -366,8 +364,9 @@ function faceVerification(){
              }).done(function(data){
                console.log(data);
                if(data.isIdentical==false){
-                  console.log("dscsdcs");
+                  console.log("not identical");
                }else{
+                  //Triggers EVENT IF IMAGES ARE IDENTICAL
                   console.log("ISIDENTICAL");
                }
          }).fail(function(){

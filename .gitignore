@@ -1,1 +1,4 @@
 node_modules
+public/images
+.DS_Store
+npm_debug.log

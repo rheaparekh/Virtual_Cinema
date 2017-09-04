@@ -15,7 +15,8 @@ cloudinary.config({
   cloud_name: 'drtk420dr', 
     api_key: '294423986439988', 
       api_secret: 'R5zVmEA_oicBPr72wADypvBQkPY' 
-      });
+});
+
 app.use('/static', express.static(__dirname +  '/public'));
 
 app.get('/', function (req, res) {
