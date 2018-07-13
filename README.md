@@ -2,7 +2,7 @@
 ---
 # Overview:
 
-This app takes snapshots in real time from your webcam and verifies if it matches with the user's face. It uses microsoft cognitive face aPI for face verification and WebRTC for connection with webcam.
+This app takes snapshots in real time from your webcam and verifies if it matches with the user's face. It uses microsoft cognitive face API for face verification and WebRTC for connection with webcam.
 
 ---
 # To Setup:
